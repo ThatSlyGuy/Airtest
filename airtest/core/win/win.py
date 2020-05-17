@@ -19,6 +19,7 @@ from airtest.core.win.screen import screenshot
 from airtest import aircv
 from airtest.core.device import Device
 
+from airtest.core.win.windows_recorder import WindowsRecorder
 
 def require_app(func):
     @wraps(func)
@@ -49,6 +50,7 @@ class Windows(Device):
         self.screen = mss()
         self.monitor = self.screen.monitors[0]  # 双屏的时候，self.monitor为整个双屏
         self.main_monitor = self.screen.monitors[1]  # 双屏的时候，self.main_monitor为主屏
+        self.recorder = WindowsRecorder(self._top_window)
 
     @property
     def uuid(self):
@@ -74,13 +76,17 @@ class Windows(Device):
         if handle:
             handle = int(handle)
             self.app = self._app.connect(handle=handle)
-            self._top_window = self.app.window(handle=handle).wrapper_object()
+            self._game_window = self.app.window(handle=handle).child_window(title="UnityEditor.GameView")
+            self._top_window = self._game_window.wrapper_object()
+            self._focus_rect = (0, 40, 0, 0)
         else:
             for k in ["process", "timeout"]:
                 if k in kwargs:
                     kwargs[k] = int(kwargs[k])
             self.app = self._app.connect(**kwargs)
-            self._top_window = self.app.top_window().wrapper_object()
+            self._game_window = self.app.top_window().child_window(title="UnityEditor.GameView")
+            self._top_window = self._game_window.wrapper_object()
+            self._focus_rect = (0, 40, 0, 0)
         self.set_foreground()
 
     def shell(self, cmd):
@@ -472,6 +478,35 @@ class Windows(Device):
         w = (rect.right + self._focus_rect[2]) - (rect.left + self._focus_rect[0])
         h = (rect.bottom + self._focus_rect[3]) - (rect.top + self._focus_rect[1])
         return w, h
+
+    def start_recording(self, *args, **kwargs):
+        """
+        Start recording the device display
+
+        Args:
+            *args: optional arguments
+            **kwargs:  optional arguments
+
+        Returns:
+            None
+
+        """
+
+        return self.recorder.start_recording(*args, **kwargs)
+
+    def stop_recording(self, *args, **kwargs):
+        """
+        Stop recording the device display. Recoding file will be kept in the device.
+
+        Args:
+            *args: optional arguments
+            **kwargs: optional arguments
+
+        Returns:
+            None
+
+        """
+        return self.recorder.stop_recording(*args, **kwargs)
 
     def _windowpos_to_screenpos(self, pos):
         """
