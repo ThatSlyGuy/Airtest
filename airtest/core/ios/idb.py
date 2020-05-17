@@ -124,11 +124,10 @@ class IDB(object):
             filePath: destination of the recorded video
 
         Returns:
-            process
+            process, stdout
 
         """
-        process, stdout = self._cmd('record', 'video', filePath)
-        return process
+        return self._cmd('record', 'video', filePath)
 
     def _cmd(self, *cmds, **kwargs):
         command = ['idb']

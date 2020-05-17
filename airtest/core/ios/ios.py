@@ -157,7 +157,7 @@ class IOS(Device):
             None
 
         """
-        self.recordingProcess = self.idb.start_recording()
+        self.recordingProcess, stdout = self.idb.start_recording()
 
     def stop_recording(self, *args, **kwargs):
         """
@@ -283,19 +283,57 @@ class IOS(Device):
 
     def install_app(self, uri, package):
         """
-        curl -X POST $JSON_HEADER \
-        -d "{\"desiredCapabilities\":{\"bundleId\":\"com.apple.mobilesafari\", \"app\":\"[host_path]/magicapp.app\"}}" \
-        $DEVICE_URL/session
-        https://github.com/facebook/WebDriverAgent/wiki/Queries
-        """
-        raise NotImplementedError
+        Install the application on the device
 
-    def start_app(self, package, activity=None):
-        self.defaultSession = None
-        self.driver.session(package)
+        Args:
+            filepath: full path to the `app` file to be installed on the device
+            replace: True or False to replace the existing application
+            install_options: list of options, default is []
+
+        Returns:
+            process, stdout
+
+        """
+        return self.idb.install_app(package)
+
+    def uninstall_app(self, package):
+        """
+        Uninstall the application from the device
+
+        Args:
+            package: package name
+
+        Returns:
+            process, stdout
+
+        """
+        return self.idb.uninstall_app(package)
+
+    def start_app(self, package):
+        """
+        Start the application and activity
+
+        Args:
+            package: package name
+
+        Returns:
+            process, stdout
+
+        """
+        return self.idb.start_app(package)
 
     def stop_app(self, package):
-        self.driver.session().close()
+        """
+        Stop the application
+
+        Args:
+            package: package name
+
+        Returns:
+            process, stdout
+
+        """
+        return self.idb.stop_app(package)
 
     def get_ip_address(self):
         """

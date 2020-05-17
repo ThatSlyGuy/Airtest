@@ -182,7 +182,7 @@ def install(filepath, **kwargs):
     :param filepath: the path to file to be installed on target device
     :param kwargs: platform specific `kwargs`, please refer to corresponding docs
     :return: None
-    :platforms: Android
+    :platforms: Android, Ios
     """
     return G.DEVICE.install_app(filepath, **kwargs)
 
@@ -194,7 +194,7 @@ def uninstall(package):
 
     :param package: name of the package, see also `start_app`
     :return: None
-    :platforms: Android
+    :platforms: Android, Ios
     """
     return G.DEVICE.uninstall_app(package)
 
