@@ -281,7 +281,7 @@ class IOS(Device):
             text += '\n'
         self.session.send_keys(text)
 
-    def install_app(self, uri, package):
+    def install_app(self, uri, package, activity=None):
         """
         Install the application on the device
 
