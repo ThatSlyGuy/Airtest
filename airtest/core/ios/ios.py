@@ -21,6 +21,7 @@ from airtest.core.ios.constant import CAP_METHOD, TOUCH_METHOD, IME_METHOD
 from airtest.core.ios.rotation import XYTransformer, RotationWatcher
 from airtest.core.ios.fake_minitouch import fakeMiniTouch
 from airtest.core.ios.instruct_helper import InstructHelper
+from airtest.core.ios.idb import IDB
 from airtest.utils.logger import get_logger
 
 # roatations of ios
@@ -55,7 +56,7 @@ class IOS(Device):
         - ``iproxy $port 8100 $udid``
     """
 
-    def __init__(self, addr=DEFAULT_ADDR):
+    def __init__(self, addr=DEFAULT_ADDR, udid=None):
         super(IOS, self).__init__()
 
         # if none or empty, use default addr
@@ -90,6 +91,9 @@ class IOS(Device):
 
         # helper of run process like iproxy
         self.instruct_helper = InstructHelper()
+
+        self.idb = IDB(udid) if udid else None
+            
 
     @property
     def uuid(self):
@@ -140,6 +144,34 @@ class IOS(Device):
         """
         w, h = self.get_current_resolution()
         return 0, 0, w, h
+
+    def start_recording(self, *args, **kwargs):
+        """
+        Start recording the device display
+
+        Args:
+            *args: optional arguments
+            **kwargs:  optional arguments
+
+        Returns:
+            None
+
+        """
+        self.recordingProcess = self.idb.start_recording()
+
+    def stop_recording(self, *args, **kwargs):
+        """
+        Stop recording the device display. Recoding file will be kept in the device.
+
+        Args:
+            *args: optional arguments
+            **kwargs: optional arguments
+
+        Returns:
+            None
+
+        """
+        self.recordingProcess.kill()
 
     def get_current_resolution(self):
         w, h = self.display_info["width"], self.display_info["height"]
