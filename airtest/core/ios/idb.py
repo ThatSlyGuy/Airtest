@@ -3,7 +3,7 @@ from subprocess import Popen, STDOUT, PIPE
 
 class IDB(object):
     
-    def __init(self, udid=None):
+    def __init__(self, udid=None):
         self.udid = udid
     
     def connect(self):
