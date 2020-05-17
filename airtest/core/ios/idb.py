@@ -1,4 +1,3 @@
-from io import TextIOWrapper
 from subprocess import Popen, STDOUT, PIPE
 
 
@@ -12,7 +11,7 @@ class IDB(object):
         Perform `idb connect` command
 
         Returns:
-            process, stdout
+            process
 
         """
         self._cmd('list-targets', targetUdid=False)
@@ -23,7 +22,7 @@ class IDB(object):
         Perform `idb disconnect` command
 
         Returns:
-            process, stdout
+            process
 
         """
         return self._cmd('disconnect', self.udid, targetUdid=False)
@@ -33,7 +32,7 @@ class IDB(object):
         Perform `idb kill` command
 
         Returns:
-            process, stdout
+            process
 
         """
         return self._cmd('kill')
@@ -46,7 +45,7 @@ class IDB(object):
             filepath: full path to file to be installed on the device
 
         Returns:
-            process, stdout
+            process
 
         """
         return self._cmd('install', filePath)
@@ -58,7 +57,7 @@ class IDB(object):
             package: package name to be uninstalled from the device
 
         Returns:
-            process, stdout
+            process
 
         """
         return self._cmd('uninstall', package)
@@ -68,7 +67,7 @@ class IDB(object):
         Perform `idb launch` command to start the application
 
         Returns:
-            process, stdout
+            process
 
         """
         return self._cmd('launch', package, '-f/--foreground-if-running')
@@ -81,7 +80,7 @@ class IDB(object):
             package: package name
 
         Returns:
-            process, stdout
+            process
 
         """
         return self._cmd('terminate', package)
@@ -97,7 +96,7 @@ class IDB(object):
             package: package the file will be under
 
         Returns:
-            process, stdout
+            process
 
         """
         self._cmd('file', 'mkdir', 'files', '--bundle-id', package)
@@ -111,7 +110,7 @@ class IDB(object):
             package: name of the running package to debug
 
         Returns:
-            process, stdout
+            process
 
         """
         return self._cmd('debugserver', 'start', package)
@@ -124,7 +123,7 @@ class IDB(object):
             filePath: destination of the recorded video
 
         Returns:
-            process, stdout
+            process
 
         """
         return self._cmd('record', 'video', filePath)
@@ -138,8 +137,5 @@ class IDB(object):
         print(command)
 
         process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
-        # for line in TextIOWrapper(process.stdout, encoding="utf-8"):
-        #     print(line)
-        stdout, stderr = process.communicate()
 
-        return process, stdout
+        return process

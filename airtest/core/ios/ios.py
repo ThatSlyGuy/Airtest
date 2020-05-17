@@ -157,7 +157,7 @@ class IOS(Device):
             None
 
         """
-        self.recordingProcess, stdout = self.idb.start_recording()
+        self.recordingProcess = self.idb.start_recording()
 
     def stop_recording(self, *args, **kwargs):
         """
@@ -291,7 +291,7 @@ class IOS(Device):
             install_options: list of options, default is []
 
         Returns:
-            process, stdout
+            process
 
         """
         return self.idb.install_app(package)
@@ -304,7 +304,7 @@ class IOS(Device):
             package: package name
 
         Returns:
-            process, stdout
+            process
 
         """
         return self.idb.uninstall_app(package)
@@ -317,7 +317,7 @@ class IOS(Device):
             package: package name
 
         Returns:
-            process, stdout
+            process
 
         """
         return self.idb.start_app(package)
@@ -330,7 +330,7 @@ class IOS(Device):
             package: package name
 
         Returns:
-            process, stdout
+            process
 
         """
         return self.idb.stop_app(package)
