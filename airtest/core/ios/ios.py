@@ -8,6 +8,7 @@ import time
 import json
 import base64
 import wda
+from shutil import move
 import traceback
 from urllib.request import urlopen
 from json import loads
@@ -103,6 +104,7 @@ class IOS(Device):
                 pass
 
         self.idb = IDB(udid) if udid else None
+        self.defaultRecordingPath = 'screen.mp4'
 
     @property
     def uuid(self):
@@ -166,14 +168,14 @@ class IOS(Device):
             None
 
         """
-        self.recordingProcess = self.idb.start_recording(*args, **kwargs)
+        self.recordingProcess = self.idb.start_recording(self.defaultRecordingPath)
 
-    def stop_recording(self, *args, **kwargs):
+    def stop_recording(self, output="screen.mp4", **kwargs):
         """
         Stop recording the device display. Recoding file will be kept in the device.
 
         Args:
-            *args: optional arguments
+            output: default file is `screen.mp4`
             **kwargs: optional arguments
 
         Returns:
@@ -181,6 +183,8 @@ class IOS(Device):
 
         """
         self.recordingProcess.kill()
+        time.sleep(1)
+        move(self.defaultRecordingPath, output)
 
     def get_current_resolution(self):
         w, h = self.display_info["width"], self.display_info["height"]
