@@ -5,6 +5,8 @@ class IDB(object):
     
     def __init__(self, udid=None):
         self.udid = udid
+        self.disconnect()
+        self.connect()
     
     def connect(self):
         """
