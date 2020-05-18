@@ -72,7 +72,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('launch', package, '-f/--foreground-if-running')
+        return self._cmd('launch', package)
 
     def stop_app(self, package):
         """
