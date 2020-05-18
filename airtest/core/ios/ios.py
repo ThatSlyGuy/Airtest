@@ -95,12 +95,14 @@ class IOS(Device):
         self.instruct_helper = InstructHelper()
 
         if not udid:
-            with urlopen(f'http://{addr}/status') as url:
-                deviceStatus = loads(url.read().decode())['value']
-                udid = deviceStatus['device']['udid']
-        
-        self.idb = IDB(udid)
-            
+            try:
+                with urlopen(f'http://{addr}/status') as url:
+                    deviceStatus = loads(url.read().decode())['value']
+                    udid = deviceStatus['device']['udid']
+            except:
+                pass
+
+        self.idb = IDB(udid) if udid else None
 
     @property
     def uuid(self):
