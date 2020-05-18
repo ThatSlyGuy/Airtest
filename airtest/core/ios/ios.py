@@ -318,7 +318,7 @@ class IOS(Device):
         """
         return self.idb.uninstall_app(package)
 
-    def start_app(self, package):
+    def start_app(self, package, *args):
         """
         Start the application and activity
 
