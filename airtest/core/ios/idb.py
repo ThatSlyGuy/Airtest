@@ -115,7 +115,7 @@ class IDB(object):
         """
         return self._cmd('debugserver', 'start', package)
 
-    def start_recording(self, filePath):
+    def start_recording(self, filePath='=recording.mp4'):
         """
         Perform `idb record video` command
 

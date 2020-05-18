@@ -9,6 +9,8 @@ import json
 import base64
 import wda
 import traceback
+from urllib.request import urlopen
+from json import loads
 
 if six.PY3:
     from urllib.parse import urljoin
@@ -92,7 +94,12 @@ class IOS(Device):
         # helper of run process like iproxy
         self.instruct_helper = InstructHelper()
 
-        self.idb = IDB(udid) if udid else None
+        if not udid:
+            with urlopen(f'http://{addr}/status') as url:
+                deviceStatus = loads(url.read().decode())['value']
+                udid = deviceStatus['device']['udid']
+        
+        self.idb = IDB(udid)
             
 
     @property
@@ -157,7 +164,7 @@ class IOS(Device):
             None
 
         """
-        self.recordingProcess = self.idb.start_recording()
+        self.recordingProcess = self.idb.start_recording(*args, **kwargs)
 
     def stop_recording(self, *args, **kwargs):
         """
