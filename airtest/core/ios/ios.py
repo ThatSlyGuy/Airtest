@@ -294,20 +294,21 @@ class IOS(Device):
             text += '\n'
         self.session.send_keys(text)
 
-    def install_app(self, uri, package, activity=None):
+    def clear_app(self, package):
+        print('Clearing app data not implemented on iOS')
+
+    def install_app(self, filePath, **kwargs):
         """
         Install the application on the device
 
         Args:
-            filepath: full path to the `app` file to be installed on the device
-            replace: True or False to replace the existing application
-            install_options: list of options, default is []
+            filepath: full path to the `apk` file to be installed on the device
 
         Returns:
             process
 
         """
-        return self.idb.install_app(package)
+        return self.idb.install_app(filePath)
 
     def uninstall_app(self, package):
         """
