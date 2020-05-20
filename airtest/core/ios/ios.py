@@ -302,7 +302,7 @@ class IOS(Device):
         Install the application on the device
 
         Args:
-            filepath: full path to the `apk` file to be installed on the device
+            filepath: full path to the 'app' or 'ipa' file to be installed on the device
 
         Returns:
             process
