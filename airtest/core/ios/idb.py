@@ -139,5 +139,5 @@ class IDB(object):
         print(command)
 
         process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
-
+        process.wait()
         return process
