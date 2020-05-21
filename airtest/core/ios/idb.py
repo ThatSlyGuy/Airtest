@@ -1,5 +1,5 @@
 from subprocess import Popen, STDOUT, PIPE
-
+from pathlib import Path
 
 class IDB(object):
     
@@ -7,6 +7,7 @@ class IDB(object):
         self.udid = udid
         self.disconnect()
         self.connect()
+        self.filePath = Path(__file__).parent.absolute()
     
     def connect(self):
         """
@@ -115,7 +116,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('debugserver', 'start', package)
+        return self._cmd('debugserver', 'start', package, separateProcess=True)
 
     def start_recording(self, filePath):
         """
@@ -128,7 +129,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('record', 'video', filePath)
+        return self._cmd('record', 'video', filePath, separateProcess=True)
 
     def _cmd(self, *cmds, **kwargs):
         command = ['idb']
@@ -137,7 +138,25 @@ class IDB(object):
             command.extend(['--udid', self.udid])
         command = ' '.join(command)
         print(command)
+        activateProcess = ''
 
-        process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
-        process.wait()
+        if 'separateProcess' in kwargs and kwargs['separateProcess'] == True:
+            idx = 0
+            writtenProcess = False
+
+            while not writtenProcess:
+                idx += 1
+                try:
+                    with open(f'{self.filePath}/tempProcess{idx}.py', 'w') as f:
+                        f.write('from subprocess import Popen, STDOUT, PIPE \n')
+                        f.write(f'Popen(\"{command}\", stdout=PIPE, stderr=STDOUT, shell=True)')
+                    writtenProcess = True
+                except:
+                    pass
+
+            process = Popen('python {0}/tempProcess{1}.py'.format(self.filePath, idx), shell=True)
+        else:
+            process = Popen(command, stdout=PIPE, stderr=STDOUT, shell=True)
+            process.wait()
+        
         return process
