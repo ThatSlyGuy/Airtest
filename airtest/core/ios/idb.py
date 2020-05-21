@@ -1,5 +1,7 @@
-from subprocess import Popen, STDOUT, PIPE
+from ntpath import basename
+from os import path
 from pathlib import Path
+from subprocess import Popen, STDOUT, PIPE
 
 class IDB(object):
     
@@ -8,6 +10,7 @@ class IDB(object):
         self.disconnect()
         self.connect()
         self.filePath = Path(__file__).parent.absolute()
+        self.recordingPath = None
     
     def connect(self):
         """
@@ -129,6 +132,17 @@ class IDB(object):
             process
 
         """
+
+        directory = filePath[0:max(filePath.rfind('/') + 1, filePath.rfind('\\') + 1)] if '/' in filePath or '\\' in filePath else ''
+        fileName = basename(filePath)
+        fileExtension = fileName[fileName.rfind('.') + 1:]
+        fileName = fileName[0:fileName.rfind('.')]
+        
+        i = 0
+        while path.isfile(f'{directory}{fileName}_{i}.{fileExtension}'):
+            i += 1
+
+        self.recordingPath = f'{directory}{fileName}_{i}.{fileExtension}'
         return self._cmd('record', 'video', filePath, separateProcess=True)
 
     def _cmd(self, *cmds, **kwargs):

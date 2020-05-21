@@ -104,7 +104,6 @@ class IOS(Device):
                 pass
 
         self.idb = IDB(udid) if udid else None
-        self.defaultRecordingPath = 'screen.mp4'
 
     @property
     def uuid(self):
@@ -168,7 +167,7 @@ class IOS(Device):
             None
 
         """
-        self.recordingProcess = self.idb.start_recording(self.defaultRecordingPath)
+        self.recordingProcess = self.idb.start_recording('screen.mp4')
 
     def stop_recording(self, output="screen.mp4", **kwargs):
         """
@@ -184,7 +183,7 @@ class IOS(Device):
         """
         self.recordingProcess.kill()
         time.sleep(1)
-        move(self.defaultRecordingPath, output)
+        move(self.idb.recordingPath, output)
 
     def get_current_resolution(self):
         w, h = self.display_info["width"], self.display_info["height"]
