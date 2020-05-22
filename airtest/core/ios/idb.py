@@ -33,6 +33,16 @@ class IDB(object):
         """
         return self._cmd('disconnect', self.udid, targetUdid=False)
 
+    def list_apps(self):
+        """
+        Perform `idb list-apps` command
+
+        Returns:
+            process
+
+        """
+        return self._cmd('list-apps', targetUdid=False)
+
     def kill(self):
         """
         Perform `idb kill` command
@@ -42,7 +52,7 @@ class IDB(object):
 
         """
         return self._cmd('kill')
-
+    
     def install_app(self, filePath):
         """
         Perform `idb install` command
