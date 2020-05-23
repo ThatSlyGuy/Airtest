@@ -6,7 +6,7 @@ from subprocess import Popen, STDOUT, PIPE
 class IDB(object):
     
     def __init__(self, udid=None):
-        self.udid = udid
+        self.deviceId = udid
         self.disconnect()
         self.connect()
         self.filePath = Path(__file__).parent.absolute()
@@ -20,8 +20,8 @@ class IDB(object):
             process
 
         """
-        self._cmd('list-targets', targetUdid=False)
-        return self._cmd('connect', self.udid, targetUdid=False)
+        self._cmd('list-targets', targetDevice=False)
+        return self._cmd('idb', 'connect', self.deviceId, targetDevice=False)
 
     def disconnect(self):
         """
@@ -31,7 +31,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('disconnect', self.udid, targetUdid=False)
+        return self._cmd('idb', 'disconnect', self.deviceId, targetDevice=False)
 
     def list_apps(self):
         """
@@ -41,7 +41,21 @@ class IDB(object):
             process
 
         """
-        return self._cmd('list-apps', targetUdid=False)
+        return self._cmd('idb', 'list-apps', targetDevice=False)
+
+    def ios_deploy(self, app, *args):
+        """
+        Perform `ios-deploy` app command
+
+        Args:
+            app: the path to the app to deploy
+            args: optional additional arguments
+
+        Returns:
+            process
+
+        """
+        self._cmd('ios-deploy', *args, '--bundle', app, '--no-wifi', idSyntax='id')
 
     def kill(self):
         """
@@ -51,7 +65,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('kill')
+        return self._cmd('idb', 'kill')
     
     def install_app(self, filePath):
         """
@@ -64,7 +78,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('install', filePath)
+        return self._cmd('idb', 'install', filePath)
 
     def uninstall_app(self, package):
         """
@@ -76,7 +90,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('uninstall', package)
+        return self._cmd('idb', 'uninstall', package)
 
     def start_app(self, package):
         """
@@ -86,7 +100,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('launch', package, '-f/--foreground-if-running')
+        return self._cmd('idb', 'launch', package, '-f/--foreground-if-running')
 
     def stop_app(self, package):
         """
@@ -99,28 +113,26 @@ class IDB(object):
             process
 
         """
-        return self._cmd('terminate', package)
+        return self._cmd('idb', 'terminate', package)
 
-    def push(self, source, targetName, destination, package):
+    def push(self, package, targetFile, destination):
         """
-        Perform `idb push` command
+        Perform `ios-deploy upload` command
 
         Args:
-            source: source file to be copied to the device
-            targetName: desired name of the file on the device
-            destination: destination on the device where the file will be copied
             package: package the file will be under
+            targetFile: desired name of the file on the device
+            destination: destination on the device where the file will be copied
 
         Returns:
             process
 
         """
-        self._cmd('file', 'mkdir', 'files', '--bundle-id', package)
-        return self._cmd('file', 'push', source, targetName, destination, '--bundle-id', package)
+        return self._cmd('ios-deploy', '--bundle_id', package, '--upload', targetFile, '--to', destination, '--no-wifi', idSyntax='id')
 
     def start_debug_session(self, package):
         """
-        Perform `debugserver start` command
+        Perform `idb debugserver start` command
 
         Args:
             package: name of the running package to debug
@@ -129,7 +141,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('debugserver', 'start', package, separateProcess=True)
+        return self._cmd('idb', 'debugserver', 'start', package, separateProcess=True)
 
     def start_recording(self, filePath):
         """
@@ -142,7 +154,6 @@ class IDB(object):
             process
 
         """
-
         directory = filePath[0:max(filePath.rfind('/') + 1, filePath.rfind('\\') + 1)] if '/' in filePath or '\\' in filePath else ''
         fileName = basename(filePath)
         fileExtension = fileName[fileName.rfind('.') + 1:]
@@ -153,16 +164,16 @@ class IDB(object):
             i += 1
 
         self.recordingPath = f'{directory}{fileName}_{i}.{fileExtension}'
-        return self._cmd('record', 'video', filePath, separateProcess=True)
+        return self._cmd('idb', 'record', 'video', filePath, separateProcess=True)
 
     def _cmd(self, *cmds, **kwargs):
-        command = ['idb']
-        command.extend(cmds)
-        if 'targetUdid' not in kwargs or kwargs['targetUdid'] == True:
-            command.extend(['--udid', self.udid])
-        command = ' '.join(command)
+        commands = list(cmds)
+        if 'targetDevice' not in kwargs or kwargs['targetDevice'] == True:
+            commands.append('--udid' if 'idSyntax' not in kwargs else '--{0}'.format(kwargs['idSyntax']))
+            commands.append(self.deviceId)
+        
+        command = ' '.join(commands)
         print(command)
-        activateProcess = ''
 
         if 'separateProcess' in kwargs and kwargs['separateProcess'] == True:
             idx = 0

@@ -12,6 +12,7 @@ from shutil import move
 import traceback
 from urllib.request import urlopen
 from json import loads
+from os import path
 
 if six.PY3:
     from urllib.parse import urljoin
@@ -104,6 +105,7 @@ class IOS(Device):
                 pass
 
         self.idb = IDB(udid) if udid else None
+        self.recordingProcess = None
 
     @property
     def uuid(self):
@@ -181,9 +183,13 @@ class IOS(Device):
             None
 
         """
-        self.recordingProcess.kill()
+        if self.recordingProcess != None:
+            self.recordingProcess.kill()
+
         time.sleep(1)
-        move(self.idb.recordingPath, output)
+
+        if path.isfile(self.idb.recordingPath):
+            move(self.idb.recordingPath, output)
 
     def get_current_resolution(self):
         w, h = self.display_info["width"], self.display_info["height"]
