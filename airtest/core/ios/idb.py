@@ -55,7 +55,7 @@ class IDB(object):
             process
 
         """
-        self._cmd('ios-deploy', *args, '--bundle', app, '--no-wifi', idSyntax='id')
+        self._cmd('ios-deploy', *args, '--bundle', app, '--no-wifi', idSyntax='id', waitForProcess=False)
 
     def kill(self):
         """
