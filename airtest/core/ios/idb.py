@@ -141,7 +141,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('idb', 'debugserver', 'start', package, separateProcess=True)
+        return self._cmd('idb', 'debugserver', 'start', package, waitForProcess=False)
 
     def start_recording(self, filePath):
         """
@@ -164,7 +164,7 @@ class IDB(object):
             i += 1
 
         self.recordingPath = f'{directory}{fileName}_{i}.{fileExtension}'
-        return self._cmd('idb', 'record', 'video', filePath, separateProcess=True)
+        return self._cmd('idb', 'record', 'video', filePath, waitForProcess=False)
 
     def _cmd(self, *cmds, **kwargs):
         commands = list(cmds)
@@ -175,23 +175,9 @@ class IDB(object):
         command = ' '.join(commands)
         print(command)
 
-        if 'separateProcess' in kwargs and kwargs['separateProcess'] == True:
-            idx = 0
-            writtenProcess = False
+        process = Popen(command, stdout=PIPE, stderr=STDOUT, shell=True)
 
-            while not writtenProcess:
-                idx += 1
-                try:
-                    with open(f'{self.filePath}/tempProcess{idx}.py', 'w') as f:
-                        f.write('from subprocess import Popen, STDOUT, PIPE \n')
-                        f.write(f'Popen(\"{command}\", stdout=PIPE, stderr=STDOUT, shell=True)')
-                    writtenProcess = True
-                except:
-                    pass
-
-            process = Popen('python {0}/tempProcess{1}.py'.format(self.filePath, idx), shell=True)
-        else:
-            process = Popen(command, stdout=PIPE, stderr=STDOUT, shell=True)
+        if 'waitForProcess' not in kwargs or kwargs['waitForProcess'] == True:
             process.wait()
         
         return process
