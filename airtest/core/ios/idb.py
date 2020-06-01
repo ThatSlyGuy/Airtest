@@ -173,7 +173,7 @@ class IDB(object):
             commands.append(self.deviceId)
         
         command = ' '.join(commands)
-        print(command)
+        print(command, flush=True)
 
         process = Popen(command, stdout=PIPE, stderr=STDOUT, shell=True)
 
