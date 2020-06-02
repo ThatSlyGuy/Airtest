@@ -20,7 +20,7 @@ class IDB(object):
             process
 
         """
-        self._cmd('list-targets', targetDevice=False)
+        self._cmd('idb', 'list-targets', targetDevice=False)
         return self._cmd('idb', 'connect', self.deviceId, targetDevice=False)
 
     def disconnect(self):
@@ -41,7 +41,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('idb', 'list-apps', targetDevice=False)
+        return self._cmd('idb', 'list-apps', targetDevice=False, waitForProcess=False)
 
     def ios_deploy(self, app, *args):
         """
