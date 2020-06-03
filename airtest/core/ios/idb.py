@@ -41,7 +41,7 @@ class IDB(object):
             process
 
         """
-        return self._cmd('idb', 'list-apps', targetDevice=False, waitForProcess=False)
+        return self._cmd('idb', 'list-apps', waitForProcess=False)
 
     def ios_deploy(self, app, *args):
         """
