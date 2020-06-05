@@ -2,6 +2,7 @@ from ntpath import basename
 from os import path
 from pathlib import Path
 from subprocess import Popen, STDOUT, PIPE
+from io import TextIOWrapper
 
 class IDB(object):
     
@@ -178,6 +179,7 @@ class IDB(object):
         process = Popen(command, stdout=PIPE, stderr=STDOUT, shell=True)
 
         if 'waitForProcess' not in kwargs or kwargs['waitForProcess'] == True:
-            process.wait()
+            for line in TextIOWrapper(process.stdout, encoding='utf8'):
+                print(line, flush=True)
         
         return process
