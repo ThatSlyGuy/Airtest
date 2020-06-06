@@ -8,10 +8,11 @@ import time
 import json
 import base64
 import wda
-from shutil import move
 import traceback
 from urllib.request import urlopen
 from json import loads
+from moviepy.editor import VideoFileClip
+from moviepy.video.fx.rotate import rotate
 from os import path
 
 if six.PY3:
@@ -106,6 +107,7 @@ class IOS(Device):
 
         self.idb = IDB(udid) if udid else None
         self.recordingProcess = None
+        self.rotationInGame = 270
 
     @property
     def uuid(self):
@@ -189,7 +191,9 @@ class IOS(Device):
         time.sleep(1)
 
         if path.isfile(self.idb.recordingPath):
-            move(self.idb.recordingPath, output)
+            clip = VideoFileClip(self.idb.recordingPath, audio=False)
+            clip = rotate(clip, -90 if self.rotationInGame == 270 else 90)
+            clip.write_videofile(output)
 
     def get_current_resolution(self):
         w, h = self.display_info["width"], self.display_info["height"]
