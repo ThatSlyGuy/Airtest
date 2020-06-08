@@ -11,9 +11,8 @@ import wda
 import traceback
 from urllib.request import urlopen
 from json import loads
-from moviepy.editor import VideoFileClip
-from moviepy.video.fx.rotate import rotate
 from os import path
+from subprocess import Popen
 
 if six.PY3:
     from urllib.parse import urljoin
@@ -191,9 +190,8 @@ class IOS(Device):
         time.sleep(1)
 
         if path.isfile(self.idb.recordingPath):
-            clip = VideoFileClip(self.idb.recordingPath, audio=False)
-            clip = rotate(clip, -90 if self.rotationInGame == 270 else 90)
-            clip.write_videofile(output)
+            rotateVideoProcess = Popen(f'ffmpeg -i {self.idb.recordingPath} -vf "transpose={1 if self.rotationInGame == 270 else 2}" {output}', shell=True)
+            rotateVideoProcess.wait()
 
     def get_current_resolution(self):
         w, h = self.display_info["width"], self.display_info["height"]
